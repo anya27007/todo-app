@@ -1,9 +1,7 @@
-﻿
-#include "storage.h"
+﻿#include "storage.h"
 #include "ui.h"
 
 #include <iostream>
-#include <clocale>
 #include <string>
 
 #ifdef _WIN32
@@ -15,12 +13,11 @@ const std::string DATA_FILE = "data.txt";
 
 int main() {
     // Настройка консоли для русского языка
+
 #ifdef _WIN32
     SetConsoleCP(CP_UTF8);
     SetConsoleOutputCP(CP_UTF8);
 #endif
-
-    std::setlocale(LC_ALL, "");
 
     // Загружаем данные при запуске
     AppData data = loadData(DATA_FILE);

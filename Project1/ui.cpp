@@ -1,4 +1,9 @@
-﻿#include "ui.h"
+﻿#ifdef _WIN32
+#define NOMINMAX
+#include <windows.h>
+#endif
+
+#include "ui.h"
 
 #include <iostream>
 #include <sstream>
@@ -7,16 +12,60 @@
 #include <limits>
 #include <algorithm>
 #include <cctype>
+#include <string>
 
 // Чтение строки
 bool readLine(const std::string& prompt, std::string& result) {
-    std::cout << prompt;
+    std::cout << prompt << std::flush;
 
-    if (!std::getline(std::cin, result)) {
-        return false;
+#ifdef _WIN32
+    HANDLE h = GetStdHandle(STD_INPUT_HANDLE);
+    DWORD mode;
+
+    // Если ввод идёт с консоли, читаем Unicode и переводим в UTF-8
+    if (GetConsoleMode(h, &mode)) {
+        std::wstring wline;
+        wchar_t buf[256];
+        DWORD read = 0;
+
+        while (true) {
+            if (!ReadConsoleW(h, buf, 256, &read, nullptr) || read == 0) {
+                return false;
+            }
+
+            wline.append(buf, read);
+
+            if (wline.back() == L'\n') {
+                break;
+            }
+        }
+
+        while (!wline.empty() &&
+            (wline.back() == L'\n' || wline.back() == L'\r')) {
+            wline.pop_back();
+        }
+
+        int size = WideCharToMultiByte(
+            CP_UTF8, 0,
+            wline.data(), static_cast<int>(wline.size()),
+            nullptr, 0, nullptr, nullptr
+        );
+
+        result.assign(size, '\0');
+
+        if (size > 0) {
+            WideCharToMultiByte(
+                CP_UTF8, 0,
+                wline.data(), static_cast<int>(wline.size()),
+                &result[0], size, nullptr, nullptr
+            );
+        }
+
+        return true;
     }
+#endif
 
-    return true;
+    return static_cast<bool>(std::getline(std::cin, result));
 }
 
 // Чтение целого числа

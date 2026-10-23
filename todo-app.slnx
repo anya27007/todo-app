@@ -4,5 +4,5 @@
     <Platform Name="x86" />
   </Configurations>
   <Folder Name="/Элементы решения/" />
-  <Project Path="todo-app/todo-app.vcxproj" />
+  <Project Path="Project1/Project1.vcxproj" Id="9d2ed94f-5757-463d-a3ce-11cd3bbd2729" />
 </Solution>
